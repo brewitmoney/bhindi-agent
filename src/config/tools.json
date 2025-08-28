@@ -33,6 +33,7 @@
           "description": "Array of token transfers to execute",
           "items": {
             "type": "object",
+            "description": "A single token transfer",
             "properties": {
               "toAddress": {
                 "type": "string",

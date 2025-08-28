@@ -1,5 +1,5 @@
 import { Address } from 'viem';
-import { NetworkUtil } from './networks';
+import { NetworkUtil } from './networks.js';
 
 interface LiFiQuote {
   type: string;

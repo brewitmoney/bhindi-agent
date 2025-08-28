@@ -1,5 +1,5 @@
 import { toAccount } from 'brewit/account';
-import { NetworkUtil } from './networks';
+import { NetworkUtil } from './networks.js';
 
 
 

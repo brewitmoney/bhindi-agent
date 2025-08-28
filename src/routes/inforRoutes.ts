@@ -1,6 +1,6 @@
 import { Router, Request, Response } from 'express';
-import { getSignerInfo, getValidatotConfig } from '../services/utils';
-import { createMainAccount } from '../services/executer/utils/account';
+import { getSignerInfo, getValidatotConfig } from '../services/utils.js';
+import { createMainAccount } from '../services/executer/utils/account.js';
 
 const router = Router();
 

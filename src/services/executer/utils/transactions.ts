@@ -1,6 +1,6 @@
 import { createAccountClient, Transaction } from "brewit";
 import { SmartAccount } from "viem/account-abstraction";
-import { NetworkUtil } from "./networks";
+import { NetworkUtil } from "./networks.js";
 
 
 export const sendTransaction = async (calls: Transaction[], account: SmartAccount, chainId: number) => {

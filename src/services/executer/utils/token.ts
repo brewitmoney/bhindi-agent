@@ -13,7 +13,7 @@ import {
   zeroAddress,
 } from 'viem';
 import { Transaction } from 'brewit';
-import { NetworkUtil } from './networks';
+import { NetworkUtil } from './networks.js';
 import { arbitrum, base, baseSepolia, bsc, gnosis, mainnet, optimism, polygon, sepolia, monadTestnet } from 'viem/chains';
 
 export function fixDecimal(number: string, decimals: number) {
