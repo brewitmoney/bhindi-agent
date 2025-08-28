@@ -1,0 +1,58 @@
+[
+  {
+    "name": "swap",
+    "description": "Swap tokens from one token to another",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "toToken": {
+          "type": "string", 
+          "description": "The token to swap to"
+        },
+        "fromToken": {
+          "type": "string",
+          "description": "The token to swap from"
+        },
+        "amount": {
+          "type": "string",
+          "description": "The amount of tokens to swap"
+        }
+      },
+      "required": ["toToken", "fromToken", "amount"]
+    },
+    "confirmationRequired": true
+  },
+  {
+    "name": "send",
+    "description": "Send multiple token transfers in a single transaction",
+    "parameters": {
+      "type": "object",
+      "properties": {
+        "transfers": {
+          "type": "array",
+          "description": "Array of token transfers to execute",
+          "items": {
+            "type": "object",
+            "properties": {
+              "toAddress": {
+                "type": "string",
+                "description": "The address to send tokens to"
+              },
+              "amount": {
+                "type": "string",
+                "description": "The amount of tokens to send"
+              },
+              "token": {
+                "type": "string",
+                "description": "The token to send"
+              }
+            },
+            "required": ["toAddress", "amount", "token"]
+          }
+        }
+      },
+      "required": ["transfers"]
+    },
+    "confirmationRequired": true
+  }
+] 
