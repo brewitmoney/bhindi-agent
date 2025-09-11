@@ -150,26 +150,26 @@ import { getValidatotConfig, getSignerInfo } from '../utils.js';
   export class ExecutorService {
   
 
-  async executeSend({transfers, validatorSalt, accountAddress}: {transfers: {to: Address, token: Address, amount: string}[], validatorSalt: Hex, accountAddress: Address}): Promise<any> {
+  async executeSend({transfers, chainId, validatorSalt, accountAddress}: {transfers: {to: Address, token: Address, amount: string}[], chainId: number, validatorSalt: Hex, accountAddress: Address}): Promise<any> {
       
       const {signer} = getSignerInfo();
   // const account = await createMainAccount(signer, 'ownable', 10143);
   if (!signer?.address) throw new Error('Signer address is required');
   const validatorConfig = getValidatotConfig(signer.address, validatorSalt);
 
-  const delegatedAccount = await createDelegatedAccount(signer, validatorConfig, 8453, accountAddress);
+  const delegatedAccount = await createDelegatedAccount(signer, validatorConfig, chainId, accountAddress);
 
   console.log(delegatedAccount)
   const transferAsset = await Promise.all(
     transfers.map(({to, token, amount}) => {
-        return buildTransferAsset(8453, token, to, amount);
+        return buildTransferAsset(chainId, token, to, amount);
     })
   );
 
   console.log(transferAsset)
   
   // Run both transactions simultaneously
-  const tx = await sendTransaction(transferAsset, delegatedAccount as SmartAccount, 8453);
+  const tx = await sendTransaction(transferAsset, delegatedAccount as SmartAccount, chainId);
   return tx;
     }
   }

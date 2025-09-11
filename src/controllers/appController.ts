@@ -57,38 +57,42 @@ export class AppController {
   private async handleBrewitTool(toolName: string, params: any, req: Request, res: Response): Promise<void> {
     let result;
     const headers = this.extractHeaders(req);
-    
+    const agentDelegationKey = headers.agentDelegationKey;
+
+    const agentConfig = await this.brewitService.verifyAgentConfig(agentDelegationKey);
 
     switch (toolName) {
       case 'send': {
-        // const sendPayload = {
-        //   toAddress: params.toAddress,
-        //   amount: params.amount,
-        //   token: params.token
-        // };
+     
+        try {
         result = await this.executorService.executeSend({
           transfers: params.transfers.map((transfer: any) => ({
             to: transfer.toAddress,
             token: transfer.token,
             amount: transfer.amount
           })),
-          validatorSalt: headers.validatorSalt as Hex,
-          accountAddress: headers.accountAddress as Address
+          chainId: agentConfig.chainids[0] as number,
+          validatorSalt: agentConfig.salt as Hex,
+          accountAddress: agentConfig.account_address as Address
         });
+        } catch (error) {
+          console.log(error)
+          throw new Error('Don\'t have enough balance or permission to send');
+        }
         break;
       }
       
       case 'swap': {
-        const swapPayload = {
-          toToken: params.toToken,
-          fromToken: params.fromToken,
-          amount: params.amount
-        };
-        result = await this.brewitService.swap({
-          ...swapPayload,
-          accountAddress: headers.accountAddress,
-          validatorSalt: headers.validatorSalt
-        });
+        // const swapPayload = {
+        //   toToken: params.toToken,
+        //   fromToken: params.fromToken,
+        //   amount: params.amount
+        // };
+        // result = await this.brewitService.swap({
+        //   ...swapPayload,
+        //   accountAddress: headers.accountAddress,
+        //   validatorSalt: headers.validatorSalt
+        // });
         break;
       }
       
@@ -126,18 +130,16 @@ export class AppController {
     /**
    * Extract Validator Salt and Account Address from request headers
    */
-    private extractHeaders(req: Request): { validatorSalt: string; accountAddress: string } {
-      const validatorSalt = req.headers['x-validator-salt'];
-      const accountAddress = req.headers['x-account-address'];
+    private extractHeaders(req: Request): { agentDelegationKey: string } {
 
-      if (!validatorSalt || typeof validatorSalt !== 'string') {
-        throw new Error('Missing or invalid x-validator-salt header');
-      }
-      if (!accountAddress || typeof accountAddress !== 'string') {
-        throw new Error('Missing or invalid x-account-address header');
+      const agentDelegationKey = req.headers['x-agent-delegation-key'];
+
+      if (!agentDelegationKey || typeof agentDelegationKey !== 'string') {
+        throw new Error('Missing or invalid x-agent-delegation-key header');
       }
 
-      return { validatorSalt, accountAddress };
+
+      return { agentDelegationKey };
     }
 
   /**
