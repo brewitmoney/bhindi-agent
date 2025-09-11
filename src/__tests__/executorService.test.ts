@@ -66,6 +66,7 @@ describe('ExecutorService', () => {
     it('should execute multiple transfers successfully', async () => {
       const result = await executorService.executeSend({
         transfers: mockTransfers,
+        chainId: 8453,
         validatorSalt: mockValidatorSalt,
         accountAddress: mockAccountAddress
       });
@@ -118,6 +119,7 @@ describe('ExecutorService', () => {
 
       await expect(executorService.executeSend({
         transfers: mockTransfers,
+        chainId: 8453,
         validatorSalt: mockValidatorSalt,
         accountAddress: mockAccountAddress
       })).rejects.toThrow('Signer address is required');
@@ -128,6 +130,7 @@ describe('ExecutorService', () => {
 
       await expect(executorService.executeSend({
         transfers: mockTransfers,
+        chainId: 8453,
         validatorSalt: mockValidatorSalt,
         accountAddress: mockAccountAddress
       })).rejects.toThrow('Transaction failed');
@@ -136,6 +139,7 @@ describe('ExecutorService', () => {
     it('should handle empty transfers array', async () => {
       await expect(executorService.executeSend({
         transfers: [],
+        chainId: 8453,
         validatorSalt: mockValidatorSalt,
         accountAddress: mockAccountAddress
       })).resolves.toBeDefined();
@@ -146,6 +150,7 @@ describe('ExecutorService', () => {
     it('should use correct chain ID for all operations', async () => {
       await executorService.executeSend({
         transfers: mockTransfers,
+        chainId: 8453,
         validatorSalt: mockValidatorSalt,
         accountAddress: mockAccountAddress
       });
