@@ -1,10 +1,7 @@
 import { ValidatorType } from "brewit"
 import { Account, Address, encodeAbiParameters, Hex } from "viem"
-import { privateKeyToAccount, generatePrivateKey } from "viem/accounts"
-import fs from 'fs';
-// import path from 'path';
-
-const CONFIG_PATH = new URL('../config/signer.json', import.meta.url).pathname;
+import { privateKeyToAccount } from "viem/accounts"
+import { pbkdf2Sync } from 'crypto';
 
 
 
@@ -30,58 +27,46 @@ export const encodeValidationData = ({
 
 
 
-  export const getValidatotConfig = (address: Hex, salt: Hex): {
+  export const getValidatotConfig = (address: Hex, salt?: Hex): {
   validator: ValidatorType;
   validatorInitData: Hex;
-  salt: Hex;
+  salt?: Hex;
 } => {
    const validatorConfig = { validator: 'ownable' as ValidatorType, 
     validatorInitData: encodeValidationData({
         threshold: 1,
         owners: [address],
       }), 
-    salt: salt
+    ...(salt && { salt: salt })
   }
   return validatorConfig;
 }
 
 
-export function getSignerInfo(): {  signer: Account|null, salt: Hex} {
-    let config: any = {};
-    let signer: Account|null = null;
-    let salt: Hex = '0x';
-    
-    // First check config file
-    if (fs.existsSync(CONFIG_PATH)) {
-      config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
-      if (config.privateKey) {
-        signer = privateKeyToAccount(config.privateKey);
-      }
+export function getSignerInfo(): { signer: Account } {
+    // Use deterministic key generation from master seed
+    const masterSeed = process.env.AGENT_MASTER_SEED;
+    if (!masterSeed) {
+        throw new Error('AGENT_MASTER_SEED environment variable is required for deterministic key generation');
     }
     
-    // If no private key in config, check environment variable
-    if (!signer && process.env.AGENT_PRIVATE_KEY) {
-      signer = privateKeyToAccount(process.env.AGENT_PRIVATE_KEY as Hex);
-      // Store the env private key in config for future use
-      config.privateKey = process.env.AGENT_PRIVATE_KEY;
-      fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
-    }
+    // Derive consistent private key from master seed
+    const privateKey = derivePrivateKeyFromSeed(masterSeed);
+    const signer = privateKeyToAccount(privateKey);
     
-    // If still no private key, generate one and store in config
-    if (!signer) {
-      const privateKey = generatePrivateKey();
-      config.privateKey = privateKey;
-      fs.writeFileSync(CONFIG_PATH, JSON.stringify(config, null, 2));
-      signer = privateKeyToAccount(privateKey);
+    return { signer };
+}
+
+/**
+ * Derives a consistent private key from a master seed using PBKDF2
+ */
+function derivePrivateKeyFromSeed(seed: string): Hex {
+    try {
+        const derived = pbkdf2Sync(seed, 'agent-private-key', 100000, 32, 'sha256');
+        return `0x${derived.toString('hex')}`;
+    } catch (error) {
+        throw new Error(`Failed to derive private key from seed: ${error}`);
     }
-    
-    // Get salt from config file
-    if (fs.existsSync(CONFIG_PATH)) {
-      config = JSON.parse(fs.readFileSync(CONFIG_PATH, 'utf-8'));
-      if (config.salt) {
-        salt = config.salt;
-      }
-    }
-    
-    return {signer, salt};
-  }
+}
+
+ 

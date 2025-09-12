@@ -6,7 +6,7 @@ const router = Router();
 
 router.get('/', async (req: Request, res: Response) => {
   try {
-    const {signer, salt} = getSignerInfo();
+    const {signer} = getSignerInfo();
     const account = await createMainAccount(signer, 'ownable', 8453);
     
     if (!signer) {
@@ -22,7 +22,7 @@ router.get('/', async (req: Request, res: Response) => {
       signer: signer.address,
       address: account.address,
       publicKey: signer.publicKey,
-      validatorConfig: getValidatotConfig(signer.address, salt),
+      validatorConfig: getValidatotConfig(signer.address),
     });
   } catch (error: Error | unknown) {
     res.status(500).json({

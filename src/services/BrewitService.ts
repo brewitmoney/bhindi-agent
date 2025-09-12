@@ -1,4 +1,7 @@
 import axios from 'axios';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 interface SwapPayload {
   toToken: string;
@@ -47,9 +50,10 @@ class BrewitError extends Error {
 }
 
 export class BrewitService {
-  private readonly baseUrl = 'https://api.brewit.money';
+  private readonly baseUrl = process.env.BREWIT_API_URL;
 
   async swap(payload: SwapPayload): Promise<any> {
+
     const response = await axios.post(`${this.baseUrl}/automation/agents/monad`, {
       name: "Monad Agent Job",
       repeat: 5000,
@@ -74,6 +78,8 @@ export class BrewitService {
   }
 
   async verifyAgentConfig(apiKey: string): Promise<AgentConfigResponse> {
+    console.log(process.env.BREWIT_API_URL)
+
     try {
       console.log(apiKey)
       const response = await axios.get<AgentConfigResponse>(`${this.baseUrl}/accounts/agents/verify`, {
