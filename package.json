@@ -1,5 +1,5 @@
 {
-  "name": "bhindi-agent-starter",
+  "name": "brewit-bhindi-agent",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/server.js",
@@ -19,7 +19,7 @@
   ],
   "author": "",
   "license": "ISC",
-  "description": "Bhindi.io Agent Starter - Calculator + GitHub Agent using Express and TypeScript",
+  "description": "Brewit Bhindi Agent that can perform limited actions on Brewit Account",
   "dependencies": {
     "@types/axios": "^0.9.36",
     "@types/jest": "^29.5.14",

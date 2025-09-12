@@ -1,17 +1,17 @@
 [
   {
     "name": "swap",
-    "description": "Swap tokens from one token to another",
+    "description": "Swap tokens from one token to another on any chain",
     "parameters": {
       "type": "object",
       "properties": {
         "toToken": {
           "type": "string", 
-          "description": "The token to swap to"
+          "description": "The token address to swap to"
         },
         "fromToken": {
           "type": "string",
-          "description": "The token to swap from"
+          "description": "The token address to swap from"
         },
         "amount": {
           "type": "string",
@@ -24,7 +24,7 @@
   },
   {
     "name": "send",
-    "description": "Send multiple token transfers in a single transaction",
+    "description": "Send single or multiple token transfers in a single transaction. Accepts an array of token transfers.",
     "parameters": {
       "type": "object",
       "properties": {
@@ -37,15 +37,15 @@
             "properties": {
               "toAddress": {
                 "type": "string",
-                "description": "The address to send tokens to"
+                "description": "The recipient address to send tokens to"
               },
               "amount": {
                 "type": "string",
-                "description": "The amount of tokens to send"
+                "description": "The amount of token to send"
               },
               "token": {
                 "type": "string",
-                "description": "The token to send"
+                "description": "The token address to send"
               }
             },
             "required": ["toAddress", "amount", "token"]
