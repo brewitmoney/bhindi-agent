@@ -5,7 +5,7 @@ exports.apps = [{
   exec_mode: 'fork',
   env: {
     NODE_ENV: 'production',
-    PORT: 8004
+    PORT: 3000
   },
   watch: false,
   max_memory_restart: '1G',

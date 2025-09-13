@@ -82,17 +82,17 @@ export class AppController {
         break;
       }
       
+      // TODO: Implement Swap with internal executor
       case 'swap': {
-        // const swapPayload = {
-        //   toToken: params.toToken,
-        //   fromToken: params.fromToken,
-        //   amount: params.amount
-        // };
-        // result = await this.brewitService.swap({
-        //   ...swapPayload,
-        //   accountAddress: headers.accountAddress,
-        //   validatorSalt: headers.validatorSalt
-        // });
+        const swapPayload = {
+          toToken: params.toToken,
+          fromToken: params.fromToken,
+          amount: params.amount,
+          validatorSalt: agentConfig.salt as Hex
+        };
+        result = await this.brewitService.swap({
+          ...swapPayload,
+        });
         break;
       }
       

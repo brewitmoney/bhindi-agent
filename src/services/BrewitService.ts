@@ -8,7 +8,6 @@ interface SwapPayload {
   fromToken: string;
   validatorSalt: string;
   amount: string;
-  accountAddress: string;
 }
 
 interface SendPayload {
