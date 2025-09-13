@@ -1,6 +1,9 @@
-# Bhindi Brewit Agent on Monad
+# Bhindi Brewit Agent
 
-A TypeScript-based agent starter kit that demonstrates integration with Brewit Money's API for token operations. Perfect for learning agent development with the [Bhindi.io](https://bhindi.io) specification.
+A TypeScript-based agent built using [Bhindi.io](https://bhindi.io) specification. 
+
+# What is Brewit?
+Brewit provides crypto accounts for individuals and teams. Using the Brewit agent, users can interact and perform crypto transactions on their Brewit account
 
 # What is Bhindi?
 Bhindi lets you talk to your apps like you talk to a friend.
@@ -12,29 +15,17 @@ Check a list of integrations available at [Bhindi Agents Directory](https://dire
 
 For comprehensive documentation on building agents, visit the [Bhindi Documentation](https://github.com/upsurgeio/bhindi-docs).
 
-## 🎯 What This Starter Kit Demonstrates
+Checkout [Brewit Documentation](http://docs.brewit.money) to add features to agent. 
 
-This starter kit teaches you how to build agents with:
-- **Token Operations** (Swap and Send tokens)
-- **Brewit Money Integration** (API integration for DeFi operations)
-- **Proper parameter validation** using JSON Schema
-- **Advanced features** like `confirmationRequired`
-- **Standardized response formats** following agent specification
 
 ## ✨ Features
 
 ### Token Operations
-- **Token Swaps**: Swap between different tokens
-- **Token Transfers**: Send tokens to other addresses
-- **Parameter validation**: Proper error handling for invalid inputs
+- **Token Swaps**: Swap between different tokens on any supported chain
+- **Multi-Transfer Support**: Send single or multiple token transfers in a single transaction
 - **Confirmation required**: User confirmation for all token operations
+- **Cross-chain Support**: Works with multiple blockchain networks
 
-### Development Features
-- **Full TypeScript support** with strict typing
-- **Comprehensive testing** with Jest
-- **ESLint + Prettier** for code quality
-- **JSON Schema validation** for parameters
-- **Standardized error handling**
 
 ## 🚀 Available Tools
 
@@ -42,8 +33,21 @@ This starter kit teaches you how to build agents with:
 
 | Tool | Description | Special Features |
 |------|-------------|------------------|
-| `swap` | Swap between tokens | `confirmationRequired: true` |
-| `send` | Send tokens to address | `confirmationRequired: true` |
+| `swap` | Swap tokens from one token to another on any chain | `confirmationRequired: true` |
+| `send` | Send single or multiple token transfers in a single transaction | `confirmationRequired: true` |
+
+### Tool Parameters
+
+#### Swap Tool
+- `toToken` (string): The token address to swap to
+- `fromToken` (string): The token address to swap from  
+- `amount` (string): The amount of tokens to swap
+
+#### Send Tool
+- `transfers` (array): Array of token transfers to execute
+  - `toAddress` (string): The recipient address to send tokens to
+  - `amount` (string): The amount of token to send
+  - `token` (string): The token address to send
 
 ## 📋 Quick Start
 
@@ -72,12 +76,25 @@ curl -X GET "http://localhost:3000/tools"
 # Test token swap
 curl -X POST "http://localhost:3000/tools/swap" \
   -H "Content-Type: application/json" \
+  -H "x-agent-delegation-key: your-delegation-key" \
   -d '{
-    "toToken": "USDC",
-    "fromToken": "ETH",
-    "amount": "1.0",
-    "validatorSalt": "your-validator-salt",
-    "accountAddress": "your-account-address"
+    "toToken": "0xA0b86a33E6441b8c4C8C0C4C0C4C0C4C0C4C0C4C",
+    "fromToken": "0x0000000000000000000000000000000000000000",
+    "amount": "1.0"
+  }'
+
+# Test multi-token send
+curl -X POST "http://localhost:3000/tools/send" \
+  -H "Content-Type: application/json" \
+  -H "x-agent-delegation-key: your-delegation-key" \
+  -d '{
+    "transfers": [
+      {
+        "toAddress": "0x1234567890123456789012345678901234567890",
+        "amount": "100",
+        "token": "0xA0b86a33E6441b8c4C8C0C4C0C4C0C4C0C4C0C4C"
+      }
+    ]
   }'
 ```
 
@@ -89,51 +106,75 @@ curl -X POST "http://localhost:3000/tools/swap" \
 # Token Swap
 curl -X POST "http://localhost:3000/tools/swap" \
   -H "Content-Type: application/json" \
+  -H "x-agent-delegation-key: your-delegation-key" \
   -d '{
-    "toToken": "USDC",
-    "fromToken": "ETH",
-    "amount": "1.0",
-    "validatorSalt": "your-validator-salt",
-    "accountAddress": "your-account-address"
+    "toToken": "0xA0b86a33E6441b8c4C8C0C4C0C4C0C4C0C4C0C4C",
+    "fromToken": "0x0000000000000000000000000000000000000000",
+    "amount": "1.0"
   }'
 
-# Send Tokens
+# Single Token Transfer
 curl -X POST "http://localhost:3000/tools/send" \
   -H "Content-Type: application/json" \
+  -H "x-agent-delegation-key: your-delegation-key" \
   -d '{
-    "toAddress": "recipient-address",
-    "amount": "100",
-    "token": "USDC",
-    "validatorSalt": "your-validator-salt",
-    "accountAddress": "your-account-address"
+    "transfers": [
+      {
+        "toAddress": "0x1234567890123456789012345678901234567890",
+        "amount": "100",
+        "token": "0xA0b86a33E6441b8c4C8C0C4C0C4C0C4C0C4C0C4C"
+      }
+    ]
+  }'
+
+# Multiple Token Transfers (Batch)
+curl -X POST "http://localhost:3000/tools/send" \
+  -H "Content-Type: application/json" \
+  -H "x-agent-delegation-key: your-delegation-key" \
+  -d '{
+    "transfers": [
+      {
+        "toAddress": "0x1234567890123456789012345678901234567890",
+        "amount": "100",
+        "token": "0xA0b86a33E6441b8c4C8C0C4C0C4C0C4C0C4C0C4C"
+      },
+      {
+        "toAddress": "0x0987654321098765432109876543210987654321",
+        "amount": "50",
+        "token": "0x0000000000000000000000000000000000000000"
+      }
+    ]
   }'
 
 # Expected response:
-# {
-#   "success": true,
-#   "responseType": "mixed",
-#   "data": {
-#     "name": "Monad Agent Job",
-#     "repeat": 5000,
-#     "times": 1,
-#     "task": "swap",
-#     "enabled": true
-#   }
-# }
+{
+  "success": true,
+  "responseType": "mixed",
+  "data": {
+    "result": "Transaction hash or result data",
+    "message": "Successfully executed swap operation",
+    "tool_type": "brewit"
+  }
+}
 ```
 
 ## 🔐 Authentication
 
-This agent requires authentication for all operations:
-- **Validator Salt**: Required for transaction validation
-- **Account Address**: Required for transaction execution
+This agent requires authentication for all tool operations:
+- **x-agent-delegation-key**: Required header for all tool execution requests
+- The agent automatically verifies the delegation key and retrieves:
+  - **Validator Salt**: For transaction validation
+  - **Account Address**: For transaction execution
+  - **Chain IDs**: Supported blockchain networks
 
 ## 📚 API Endpoints
 
+- `GET /` - Landing page (serves README.md content)
 - `GET /tools` - Get list of available tools
-- `POST /tools/:toolName` - Execute a specific tool (requires authentication)
+- `POST /tools/:toolName` - Execute a specific tool (requires x-agent-delegation-key header)
 - `GET /health` - Health check endpoint
 - `GET /docs` - Swagger UI documentation (serves `public/swagger.json`)
+- `GET /info` - Get account information and validator configuration
 
 ## 📖 Documentation & Examples
 
@@ -182,55 +223,3 @@ npm run format
 # Development server with auto-reload
 npm run dev
 ```
-
-## 🎓 Learning Objectives
-
-This starter kit teaches you:
-
-1. **Agent Architecture**: How to structure tools and services
-2. **API Integration**: Integrating with Brewit Money's API
-3. **Parameter Validation**: JSON Schema validation patterns
-4. **Error Handling**: Proper error responses and status codes
-5. **Response Formats**: Standardized success/error responses
-6. **Testing**: Comprehensive test coverage patterns
-7. **Tool Features**: `confirmationRequired`, parameter types
-
-## 🔧 Advanced Features Demonstrated
-
-- **confirmationRequired**: All token operations require confirmation
-- **Parameter validation**: Type checking and required parameters
-- **Error handling**: Invalid addresses, insufficient balances, etc.
-- **Mixed response types**: Different data structures for different operations
-
-## 🚀 Next Steps
-
-Once you understand this agent, you can:
-
-1. **Add more token operations**: Liquidity provision, staking, etc.
-2. **Implement transaction history**: Track and display past operations
-3. **Add more chains**: Support multiple blockchain networks
-4. **Add advanced trading strategies**: Automated trading features
-5. **Add rate limiting**: Protect against excessive operations
-6. **Add portfolio management**: Track token balances and performance
-
-## 📖 Agent Specification Compliance
-
-This starter follows the [Bhindi.io](https://bhindi.io) agent specification:
-- ✅ Required endpoints: `GET /tools`, `POST /tools/:toolName`
-- ✅ Standardized response formats: `BaseSuccessResponseDto`, `BaseErrorResponseDto`
-- ✅ JSON Schema parameter validation
-- ✅ Tool confirmation
-- ✅ Authentication patterns
-- ✅ Proper error handling and status codes
-
-Perfect for learning how to build production-ready agents! 🎉
-
-## Need Help?
-
-We're here for you! You can reach out to us at:
-
-- **Email**: [info@bhindi.io](mailto:info@bhindi.io)
-- **Twitter/X**: [@bhindiai](https://x.com/bhindiai) for the latest updates
-- **Discord**: [Join our community](https://discord.gg/hSfTG33ymy)
-- **Documentation**: [Bhindi Docs](https://github.com/upsurgeio/bhindi-docs)
-- **Website**: [Bhindi.io](https://bhindi.io)
